@@ -1,4 +1,4 @@
-package org.example.demo1;
+package org.example.demo;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,17 +32,15 @@ public class HelloController{
     @FXML
     private Label title;
 
-    @FXML
-    private SplitPane one;
 
     private final File historyFile = new File("history");
 
     @FXML
-    private Button[] historyButtons = new Button[5];
+    private final Button[] historyButtons = new Button[5];
 
 
 
-    private String history[] = new String[5];
+    private final String[] history = new String[5];
 
     @FXML
     private void initialize(){
@@ -70,10 +68,7 @@ public class HelloController{
 
     @FXML
     protected void pressFileButton(){
-        if (fileMenu.isVisible())
-            fileMenu.setVisible(false);
-        else
-            fileMenu.setVisible(true);
+        fileMenu.setVisible(!fileMenu.isVisible());
         historyVbox.setVisible(false);
     }
 
@@ -88,10 +83,7 @@ public class HelloController{
     }
     @FXML
     protected void pressSettings(){
-        if (Settings.isVisible())
-            Settings.setVisible(false);
-        else
-            Settings.setVisible(true);
+        Settings.setVisible(!Settings.isVisible());
         System.out.println("Save Settings Button Pressed");
     }
 
@@ -101,10 +93,7 @@ public class HelloController{
     }
     @FXML
     protected void showHistory(){
-        if (historyVbox.isVisible())
-            historyVbox.setVisible(false);
-        else
-            historyVbox.setVisible(true);
+        historyVbox.setVisible(!historyVbox.isVisible());
     }
 
 
