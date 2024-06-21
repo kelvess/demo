@@ -1,16 +1,15 @@
 package org.example.demo;
 
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 
@@ -21,20 +20,26 @@ public class HelloController{
     @FXML
     private Button file;
     @FXML
+    private Button saveSettings;
+
+
+    @FXML
     private VBox historyVbox;
     @FXML
     private VBox fileMenu;
     @FXML
     private VBox settings;
     @FXML
-    private Label currentFilePath;
+    private VBox Catalog;
+
 
     @FXML
-    private Button saveSettings;
+    private Label currentFilePath;
     @FXML
     private Label blue;
     @FXML
     private Label title;
+
 
     @FXML
     private SplitPane leftPane;
@@ -44,23 +49,22 @@ public class HelloController{
     private SplitPane rightPane;
 
 
-
-
     @FXML
+    private TextArea text;
+
+
     private final Button[] historyButtons = new Button[5];
-
-
-    private final File historyFile = new File("history");
-
     private final String[] history = new String[5];
+
+
     private Preferences settingsPref;
     private Preferences historyPref;
-
-
+    private ArrayList<Button> catalogButtons;
     @FXML
     private void initialize(){
         settingsPref = Preferences.userRoot().node("demo/settings");
         historyPref = Preferences.userRoot().node("demo/history");
+        catalogButtons = new ArrayList<>();
 
         getSettings();
         readHistory();
@@ -87,20 +91,66 @@ public class HelloController{
     protected void pressFileButton(){
         fileMenu.setVisible(!fileMenu.isVisible());
         historyVbox.setVisible(false);
+        settings.setVisible(false);
+    }
+    @FXML
+    protected void openFile(){
+        openFile(null);
     }
 
     @FXML
-    protected void openFile(){
-        FileChooser chooser = new FileChooser();
-        File currentFile=chooser.showOpenDialog(null);
-        if (currentFile!=null) {
-            saveHistory(currentFile);
+    protected void clearAll() {
+        text.setText("");
+        catalogButtons.clear();
+        fileMenu.setVisible(false);
+        Catalog.getChildren().clear();
+        title.setText("Траектории");
+
+    }
+
+    private void openFile(File file) {
+        if (file == null) {
+            FileChooser chooser = new FileChooser();
+            file = chooser.showOpenDialog(null);
+            saveHistory(file);
         }
+        if (catalogButtons.size() > 0) {
+            for (Button button : catalogButtons) {
+                if (button.getText().equals(file.getName()))
+                    return;
+            }
+        }
+
+        Button catalogButton = new Button();
+        catalogButton.setMinHeight(30);
+        catalogButton.setMaxHeight(30);
+        catalogButton.setMaxWidth(1920);
+        VBox.setMargin(catalogButton, new Insets(-1, -1, 0, -1));
+        catalogButton.getStylesheets().add(Objects.requireNonNull(getClass().getResource("Button.css")).toString());
+        catalogButton.getStyleClass().add("file");
+        catalogButton.setText(file.getName());
+
+        File finalFile = file;
+        File finalFile1 = file;
+        catalogButton.setOnAction(actionEvent -> {
+            fillFilePath(finalFile);
+            title.setText("Траектории - " + finalFile1.getName());
+            try {
+                text.setText(Files.readString(Paths.get(finalFile.getAbsolutePath())));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+        catalogButtons.add(catalogButton);
+        Catalog.getChildren().add(catalogButton);
+
 
     }
     @FXML
     protected void pressSettings(){
         settings.setVisible(!settings.isVisible());
+        fileMenu.setVisible(false);
     }
 
     @FXML
@@ -124,17 +174,7 @@ public class HelloController{
 
 
     private void saveHistory(File file){
-        //проверка существования файла истории или его создание
-        if (!historyFile.exists()){
-            try {
-                historyFile.createNewFile();
-            }
-            catch (IOException e){
-                System.out.println("Ошибка в создании файла истории");
-                System.err.println(e);
-            }
-        }
-        else {
+
             //чтение из файла истории
             readHistory();
 
@@ -147,8 +187,6 @@ public class HelloController{
             }
 
             updateHistoryButtons();
-
-        }
 
     }
     //сдвиг истории на 1 вправо
@@ -173,11 +211,9 @@ public class HelloController{
                 historyButtons[i].setText(history[i].substring(history[i].lastIndexOf("\\")+1));
 
             int finalI = i;
-            historyButtons[i].setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    System.out.println("Нажата кнопка чтения файла из истории : "+history[finalI]);
-                }
+            historyButtons[i].setOnAction(actionEvent -> {
+                System.out.println(STR."Нажата кнопка чтения файла из истории : \{history[finalI]}");
+                openFile(new File(history[finalI]));
             });
         }
     }
@@ -189,7 +225,7 @@ public class HelloController{
             historyButtons[i].setMaxHeight(32);
             historyButtons[i].setMaxWidth(190);
             historyButtons[i].setMinWidth(190);
-            historyButtons[i].getStylesheets().add(getClass().getResource("Button.css").toString());
+            historyButtons[i].getStylesheets().add(Objects.requireNonNull(getClass().getResource("Button.css")).toString());
             historyButtons[i].getStyleClass().add("file");
             VBox.setMargin(historyButtons[i],new Insets(-1,0,0,0));
             historyVbox.getChildren().add(historyButtons[i]);
