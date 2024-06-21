@@ -1,8 +1,12 @@
 package org.example.demo;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import java.io.*;
@@ -17,6 +21,8 @@ import java.util.prefs.Preferences;
 
 
 public class HelloController{
+
+
     @FXML
     private Button file;
     @FXML
@@ -48,6 +54,8 @@ public class HelloController{
     @FXML
     private SplitPane rightPane;
 
+    @FXML
+    private AnchorPane tablePane;
 
     @FXML
     private TextArea text;
@@ -85,6 +93,7 @@ public class HelloController{
 
         title.setText("Траектории");
 
+
     }
 
     @FXML
@@ -105,6 +114,7 @@ public class HelloController{
         fileMenu.setVisible(false);
         Catalog.getChildren().clear();
         title.setText("Траектории");
+        tablePane.getChildren().clear();
 
     }
 
@@ -112,8 +122,12 @@ public class HelloController{
         if (file == null) {
             FileChooser chooser = new FileChooser();
             file = chooser.showOpenDialog(null);
+            if (file == null)
+                return;
             saveHistory(file);
         }
+        //проверка на то, чтобы не добавлять 2 раза одинаковые кнопки
+        //эта проверка создаёт ошибку под номером 1
         if (catalogButtons.size() > 0) {
             for (Button button : catalogButtons) {
                 if (button.getText().equals(file.getName()))
@@ -133,13 +147,68 @@ public class HelloController{
         File finalFile = file;
         File finalFile1 = file;
         catalogButton.setOnAction(actionEvent -> {
+            //заполнение пути
             fillFilePath(finalFile);
             title.setText("Траектории - " + finalFile1.getName());
+
             try {
+                //уставновка названия
                 text.setText(Files.readString(Paths.get(finalFile.getAbsolutePath())));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            //заполнение таблицы
+            if (tablePane.getChildren().size() != 1)
+                tablePane.getChildren().remove(1);
+            try (BufferedReader reader = new BufferedReader(new FileReader(finalFile))) {
+
+                ObservableList<line> lines = FXCollections.observableArrayList();
+
+                String str = reader.readLine();
+                while (str != null) {
+                    if (str.matches("[0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}")) {
+                        lines.add(new line(str));
+                    }
+                    // read next line
+                    str = reader.readLine();
+                }
+
+                TableView<line> table = new TableView<line>(lines);
+                TableColumn<line, Double> T = new TableColumn<line, Double>("T,c");
+                T.setCellValueFactory(new PropertyValueFactory<line, Double>("T"));
+
+                TableColumn<line, Double> X = new TableColumn<line, Double>("X,м");
+                X.setCellValueFactory(new PropertyValueFactory<line, Double>("X"));
+
+                TableColumn<line, Double> Y = new TableColumn<line, Double>("Y,м");
+                Y.setCellValueFactory(new PropertyValueFactory<line, Double>("Y"));
+
+                TableColumn<line, Double> Z = new TableColumn<line, Double>("Z,м");
+                Z.setCellValueFactory(new PropertyValueFactory<line, Double>("Z"));
+
+                TableColumn<line, Double> Vx = new TableColumn<line, Double>("Vx,м/c");
+                Vx.setCellValueFactory(new PropertyValueFactory<line, Double>("Vx"));
+
+                TableColumn<line, Double> Vy = new TableColumn<line, Double>("Vy,м/c");
+                Vy.setCellValueFactory(new PropertyValueFactory<line, Double>("Vy"));
+
+                TableColumn<line, Double> Vz = new TableColumn<line, Double>("Vz,м/c");
+                Vz.setCellValueFactory(new PropertyValueFactory<line, Double>("Vz"));
+
+                table.getColumns().addAll(T, X, Y, Z, Vx, Vy, Vz);
+
+                AnchorPane.setTopAnchor(table, 24.0);
+                AnchorPane.setLeftAnchor(table, 0.0);
+                AnchorPane.setRightAnchor(table, 0.0);
+                table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
+                tablePane.getChildren().add(table);
+
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
 
         });
         catalogButtons.add(catalogButton);
