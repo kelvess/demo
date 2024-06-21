@@ -54,13 +54,17 @@ public class HelloController{
 
     private final String[] history = new String[5];
     private Preferences settingsPref;
+    private Preferences historyPref;
 
 
     @FXML
     private void initialize(){
         settingsPref = Preferences.userRoot().node("demo/settings");
+        historyPref = Preferences.userRoot().node("demo/history");
+
         getSettings();
-        initHistoryButtons(readHistory());//инициализация кнопок истории при успешном чтении истории из файла
+        readHistory();
+        initHistoryButtons();//инициализация кнопок истории при успешном чтении истории из файла
         fileMenu.setVisible(false);
 
         file.setMinHeight(32);
@@ -97,7 +101,6 @@ public class HelloController{
     @FXML
     protected void pressSettings(){
         settings.setVisible(!settings.isVisible());
-        System.out.println("Save Settings Button Pressed");
     }
 
     @FXML
@@ -133,28 +136,18 @@ public class HelloController{
         }
         else {
             //чтение из файла истории
-            if (!readHistory()){
-                System.out.println("Ошибка повторного чтения истории");
-                return;
-            }
+            readHistory();
+
             //сдвиг истории на 1 вправо
             swapHistory();
-            //запись новой истории в файл
-            try (FileWriter writer = new FileWriter(historyFile)){
-                history[0]=file.getAbsolutePath();
-                for (int i=0;i<5;i++){
-                    System.out.println(history[i]);
-                    if (history[i]!=null)
-                        writer.write(history[i]+"\n");
-                }
+            history[0] = file.getAbsolutePath();
+            //запись новой истории
+            for (int i = 0; i < 5; i++) {
+                historyPref.put(Integer.toString(i), history[i]);
             }
-            catch (Exception e){
-                System.out.println("Ошибка в методе записи истории");
-                System.err.println(e);
-            }
-            finally {
-                updateHistoryButtons();
-            }
+
+            updateHistoryButtons();
+
         }
 
     }
@@ -165,22 +158,9 @@ public class HelloController{
         }
     }
 
-    private boolean readHistory(){
-
-        try(BufferedReader reader = new BufferedReader( new FileReader(historyFile))){
-            String line;
-            int count=0;
-            while ((line = reader.readLine()) != null && count<5) {
-                history[count]=line;
-                count++;
-            }
-            System.out.println("Успешное чтение истории");
-            return true;
-        }
-        catch (Exception e){
-            System.out.println("Ошибка в методе чтения истории");
-            System.err.println(e);
-            return false;
+    private void readHistory() {
+        for (int i = 0; i < 5; i++) {
+            history[i] = historyPref.get(Integer.toString(i), "нет данных");
         }
     }
 
@@ -202,7 +182,7 @@ public class HelloController{
         }
     }
     //первоначальное создание кнопок с историей
-    private void initHistoryButtons(boolean historyIsRead){
+    private void initHistoryButtons() {
         for(int i=0;i<5;i++) {
             historyButtons[i] = new Button();
             historyButtons[i].setMinHeight(32);
@@ -213,7 +193,6 @@ public class HelloController{
             historyButtons[i].getStyleClass().add("file");
             VBox.setMargin(historyButtons[i],new Insets(-1,0,0,0));
             historyVbox.getChildren().add(historyButtons[i]);
-            System.out.println("КНОПКА СОЗДАНА");
         }
         updateHistoryButtons();
     }
