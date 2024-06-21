@@ -1,0 +1,13 @@
+.file {
+        -fx-background-color: white;
+        -fx-border-color:grey;
+    }
+  }
+  
+  .file:hover {
+    -fx-background-color: #D3D3D3; /* Green */
+  }
+
+ .file:pressed{
+    -fx-background-color:grey;
+ }
