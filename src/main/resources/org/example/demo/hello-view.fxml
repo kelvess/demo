@@ -25,18 +25,29 @@
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="600.0">
                <children>
                   <Button fx:id="file" mnemonicParsing="false" onAction="#pressFileButton" prefHeight="32.0" prefWidth="56.0" styleClass="file" stylesheets="@Button.css" text="Файл" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="saveSettings" mnemonicParsing="false" onAction="#pressSaveSettings" prefHeight="32.0" prefWidth="90.0" styleClass="file" stylesheets="@Button.css" text="Настройки" HBox.hgrow="ALWAYS">
+                   <Button fx:id="saveSettings" mnemonicParsing="false" onAction="#pressSettings" prefHeight="32.0"
+                           prefWidth="90.0" styleClass="file" stylesheets="@Button.css" text="Настройки"
+                           HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="-1.0" />
                      </HBox.margin></Button>
-                  <Label fx:id="blue" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="32.0" prefWidth="220.0" style="-fx-background-color: #42aaff;" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                   <Label fx:id="blue" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                          minHeight="0.0" minWidth="0.0" prefHeight="32.0" prefWidth="220.0"
+                          style="-fx-background-color: #42aaff;" textFill="WHITE" HBox.hgrow="ALWAYS">
+                       <font>
+                           <Font name="System Bold" size="14.0"/>
+                       </font>
+                   </Label>
                </children>
             </HBox>
-            <SplitPane dividerPositions="0.3411371237458194" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="SOMETIMES">
+             <SplitPane fx:id="centerPane" dividerPositions="0.3411371237458194" prefHeight="160.0" prefWidth="200.0"
+                        VBox.vgrow="SOMETIMES">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <SplitPane fx:id="one" dividerPositions="0.6" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                         <SplitPane fx:id="leftPane" dividerPositions="0.4749262536873156" orientation="VERTICAL"
+                                    prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0"
+                                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <items>
                             <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                  <children>
@@ -77,7 +88,9 @@
                   </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                         <SplitPane fx:id="rightPane" dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0"
+                                    prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                  <children>
@@ -128,6 +141,19 @@
                <VBox.margin>
                   <Insets top="-1.0" />
                </VBox.margin></Button>
+         </children>
+      </VBox>
+       <VBox fx:id="settings" layoutX="55.0" layoutY="57.0" prefHeight="200.0" prefWidth="190.0" visible="false"
+             AnchorPane.leftAnchor="59.0" AnchorPane.topAnchor="57.0">
+           <children>
+               <Button alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                       minWidth="-Infinity" mnemonicParsing="false" onAction="#pressSaveSettings" prefHeight="32.0"
+                       prefWidth="192.0" styleClass="file" stylesheets="@Button.css" text="Сохранить положение окон"
+                       VBox.vgrow="NEVER">
+                   <VBox.margin>
+                       <Insets top="-1.0"/>
+                   </VBox.margin>
+               </Button>
          </children>
       </VBox>
       <VBox fx:id="historyVbox" layoutX="189.0" layoutY="88.0" prefHeight="200.0" prefWidth="190.0" visible="false" />

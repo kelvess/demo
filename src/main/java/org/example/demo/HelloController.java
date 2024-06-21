@@ -1,5 +1,6 @@
 package org.example.demo;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -10,6 +11,9 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import java.io.*;
+import java.util.prefs.Preferences;
+
+
 
 
 
@@ -21,7 +25,7 @@ public class HelloController{
     @FXML
     private VBox fileMenu;
     @FXML
-    private VBox Settings;
+    private VBox settings;
     @FXML
     private Label currentFilePath;
 
@@ -32,21 +36,30 @@ public class HelloController{
     @FXML
     private Label title;
 
+    @FXML
+    private SplitPane leftPane;
+    @FXML
+    private SplitPane centerPane;
+    @FXML
+    private SplitPane rightPane;
 
-    private final File historyFile = new File("history");
+
+
 
     @FXML
     private final Button[] historyButtons = new Button[5];
 
 
+    private final File historyFile = new File("history");
 
     private final String[] history = new String[5];
+    private Preferences settingsPref;
+
 
     @FXML
     private void initialize(){
-
-
-
+        settingsPref = Preferences.userRoot().node("demo/settings");
+        getSettings();
         initHistoryButtons(readHistory());//инициализация кнопок истории при успешном чтении истории из файла
         fileMenu.setVisible(false);
 
@@ -83,13 +96,22 @@ public class HelloController{
     }
     @FXML
     protected void pressSettings(){
-        Settings.setVisible(!Settings.isVisible());
+        settings.setVisible(!settings.isVisible());
         System.out.println("Save Settings Button Pressed");
     }
 
     @FXML
     protected void pressSaveSettings(){
-        System.out.println("Положенние окон сохранено");
+        settingsPref.putDouble("left", leftPane.getDividerPositions()[0]);
+        settingsPref.putDouble("right", rightPane.getDividerPositions()[0]);
+        settingsPref.putDouble("center", centerPane.getDividerPositions()[0]);
+        settings.setVisible(false);
+    }
+
+    private void getSettings() {
+        leftPane.setDividerPosition(0, settingsPref.getDouble("left", 0.5));
+        rightPane.setDividerPosition(0, settingsPref.getDouble("right", 0.5));
+        centerPane.setDividerPosition(0, settingsPref.getDouble("center", 0.5));
     }
     @FXML
     protected void showHistory(){
