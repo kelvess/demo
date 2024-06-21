@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 
@@ -37,7 +38,8 @@ public class HelloController{
     private VBox settings;
     @FXML
     private VBox Catalog;
-
+    @FXML
+    private VBox clearVBox;
 
     @FXML
     private Label currentFilePath;
@@ -75,8 +77,9 @@ public class HelloController{
         catalogButtons = new ArrayList<>();
 
         getSettings();
+        initHistoryButtons();
         readHistory();
-        initHistoryButtons();//инициализация кнопок истории при успешном чтении истории из файла
+
         fileMenu.setVisible(false);
 
         file.setMinHeight(32);
@@ -98,6 +101,7 @@ public class HelloController{
 
     @FXML
     protected void pressFileButton(){
+        clearVBox.setVisible(false);
         fileMenu.setVisible(!fileMenu.isVisible());
         historyVbox.setVisible(false);
         settings.setVisible(false);
@@ -109,13 +113,57 @@ public class HelloController{
 
     @FXML
     protected void clearAll() {
-        text.setText("");
+        clearVBox.setVisible(false);
+        text.clear();
         catalogButtons.clear();
         fileMenu.setVisible(false);
         Catalog.getChildren().clear();
         title.setText("Траектории");
-        tablePane.getChildren().clear();
+        if (tablePane.getChildren().size() != 1)
+            tablePane.getChildren().remove(1);
+        fillClear();
+    }
 
+    @FXML
+    protected void pressClear() {
+        clearVBox.setVisible(!clearVBox.isVisible());
+        historyVbox.setVisible(false);
+    }
+
+    private void fillClear() {
+        clearVBox.getChildren().clear();
+        for (int i = 0; i < catalogButtons.size(); i++) {
+            Button clearOneFile = createButton(catalogButtons.get(i).getText());
+            int finalI = i;
+            clearOneFile.setOnAction(_ -> {
+                Catalog.getChildren().remove(catalogButtons.get(finalI));
+                catalogButtons.remove(finalI);
+                fillClear();
+                if (title.getText().substring(13).equals(catalogButtons.get(finalI).getText())) {
+                    if (tablePane.getChildren().size() != 1)
+                        tablePane.getChildren().remove(1);
+                    currentFilePath.setText("Filepath");
+                    text.clear();
+                }
+            });
+            VBox.setMargin(clearOneFile, new Insets(-1, 0, 0, 0));
+            clearVBox.getChildren().add(clearOneFile);
+
+        }
+    }
+
+    @FXML
+    protected void clearHistory() {
+        try {
+            historyPref.clear();
+            readHistory();
+            for (int i = 0; i < 5; i++) {
+                history[i] = null;
+            }
+            updateHistoryButtons();
+        } catch (BackingStoreException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void openFile(File file) {
@@ -128,7 +176,7 @@ public class HelloController{
         }
         //проверка на то, чтобы не добавлять 2 раза одинаковые кнопки
         //эта проверка создаёт ошибку под номером 1
-        if (catalogButtons.size() > 0) {
+        if (!catalogButtons.isEmpty()) {
             for (Button button : catalogButtons) {
                 if (button.getText().equals(file.getName()))
                     return;
@@ -146,7 +194,7 @@ public class HelloController{
 
         File finalFile = file;
         File finalFile1 = file;
-        catalogButton.setOnAction(actionEvent -> {
+        catalogButton.setOnAction(_ -> {
             //заполнение пути
             fillFilePath(finalFile);
             title.setText("Траектории - " + finalFile1.getName());
@@ -173,27 +221,27 @@ public class HelloController{
                     str = reader.readLine();
                 }
 
-                TableView<line> table = new TableView<line>(lines);
-                TableColumn<line, Double> T = new TableColumn<line, Double>("T,c");
-                T.setCellValueFactory(new PropertyValueFactory<line, Double>("T"));
+                TableView<line> table = new TableView<>(lines);
+                TableColumn<line, Double> T = new TableColumn<>("T,c");
+                T.setCellValueFactory(new PropertyValueFactory<>("T"));
 
-                TableColumn<line, Double> X = new TableColumn<line, Double>("X,м");
-                X.setCellValueFactory(new PropertyValueFactory<line, Double>("X"));
+                TableColumn<line, Double> X = new TableColumn<>("X,м");
+                X.setCellValueFactory(new PropertyValueFactory<>("X"));
 
-                TableColumn<line, Double> Y = new TableColumn<line, Double>("Y,м");
-                Y.setCellValueFactory(new PropertyValueFactory<line, Double>("Y"));
+                TableColumn<line, Double> Y = new TableColumn<>("Y,м");
+                Y.setCellValueFactory(new PropertyValueFactory<>("Y"));
 
-                TableColumn<line, Double> Z = new TableColumn<line, Double>("Z,м");
-                Z.setCellValueFactory(new PropertyValueFactory<line, Double>("Z"));
+                TableColumn<line, Double> Z = new TableColumn<>("Z,м");
+                Z.setCellValueFactory(new PropertyValueFactory<>("Z"));
 
-                TableColumn<line, Double> Vx = new TableColumn<line, Double>("Vx,м/c");
-                Vx.setCellValueFactory(new PropertyValueFactory<line, Double>("Vx"));
+                TableColumn<line, Double> Vx = new TableColumn<>("Vx,м/c");
+                Vx.setCellValueFactory(new PropertyValueFactory<>("Vx"));
 
-                TableColumn<line, Double> Vy = new TableColumn<line, Double>("Vy,м/c");
-                Vy.setCellValueFactory(new PropertyValueFactory<line, Double>("Vy"));
+                TableColumn<line, Double> Vy = new TableColumn<>("Vy,м/c");
+                Vy.setCellValueFactory(new PropertyValueFactory<>("Vy"));
 
-                TableColumn<line, Double> Vz = new TableColumn<line, Double>("Vz,м/c");
-                Vz.setCellValueFactory(new PropertyValueFactory<line, Double>("Vz"));
+                TableColumn<line, Double> Vz = new TableColumn<>("Vz,м/c");
+                Vz.setCellValueFactory(new PropertyValueFactory<>("Vz"));
 
                 table.getColumns().addAll(T, X, Y, Z, Vx, Vy, Vz);
 
@@ -213,6 +261,7 @@ public class HelloController{
         });
         catalogButtons.add(catalogButton);
         Catalog.getChildren().add(catalogButton);
+        fillClear();
 
 
     }
@@ -220,6 +269,7 @@ public class HelloController{
     protected void pressSettings(){
         settings.setVisible(!settings.isVisible());
         fileMenu.setVisible(false);
+        clearVBox.setVisible(false);
     }
 
     @FXML
@@ -237,6 +287,7 @@ public class HelloController{
     }
     @FXML
     protected void showHistory(){
+        clearVBox.setVisible(false);
         historyVbox.setVisible(!historyVbox.isVisible());
     }
 
@@ -267,39 +318,31 @@ public class HelloController{
 
     private void readHistory() {
         for (int i = 0; i < 5; i++) {
-            history[i] = historyPref.get(Integer.toString(i), "нет данных");
+            history[i] = historyPref.get(Integer.toString(i), null);
+            System.out.println(history[i]);
         }
+        updateHistoryButtons();
     }
 
-    //обновление текста и функции при нажатии на кнопки истории
+    //обновление текста и выполняемой функции кнопки истории
     private void updateHistoryButtons(){
         for(int i=0;i<5;i++){
-            if (history[i]==null)
+            if (history[i] == null) {
                 historyButtons[i].setText("нет данных");
-            else
-                historyButtons[i].setText(history[i].substring(history[i].lastIndexOf("\\")+1));
-
-            int finalI = i;
-            historyButtons[i].setOnAction(actionEvent -> {
-                System.out.println(STR."Нажата кнопка чтения файла из истории : \{history[finalI]}");
-                openFile(new File(history[finalI]));
-            });
+            } else {
+                historyButtons[i].setText(history[i].substring(history[i].lastIndexOf("\\") + 1));
+                int finalI = i;
+                historyButtons[i].setOnAction(_ -> openFile(new File(history[finalI])));
+            }
         }
     }
     //первоначальное создание кнопок с историей
     private void initHistoryButtons() {
         for(int i=0;i<5;i++) {
-            historyButtons[i] = new Button();
-            historyButtons[i].setMinHeight(32);
-            historyButtons[i].setMaxHeight(32);
-            historyButtons[i].setMaxWidth(190);
-            historyButtons[i].setMinWidth(190);
-            historyButtons[i].getStylesheets().add(Objects.requireNonNull(getClass().getResource("Button.css")).toString());
-            historyButtons[i].getStyleClass().add("file");
+            historyButtons[i] = createButton(null);
             VBox.setMargin(historyButtons[i],new Insets(-1,0,0,0));
             historyVbox.getChildren().add(historyButtons[i]);
         }
-        updateHistoryButtons();
     }
 
 
@@ -307,5 +350,16 @@ public class HelloController{
         currentFilePath.setText(file.getAbsolutePath());
     }
 
+    private Button createButton(String text) {
+        Button button = new Button(text);
+        button.setMinWidth(190);
+        button.setMaxWidth(190);
+        button.setMinHeight(32);
+        button.setMaxHeight(32);
+        button.getStylesheets().add(Objects.requireNonNull(getClass().getResource("Button.css")).toString());
+        button.getStyleClass().add("file");
+        return button;
+
+    }
 
 }

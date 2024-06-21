@@ -132,6 +132,15 @@
                                           <Blend />
                                        </effect>
                                     </Label>
+                                     <Label layoutX="58.0" layoutY="83.0"
+                                            style="-fx-background-color: white; -fx-border-color: grey; -fx-alignment: center;"
+                                            text="Здесь мог быть график" textAlignment="CENTER"
+                                            AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0"
+                                            AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="23.0">
+                                         <font>
+                                             <Font name="System Bold" size="17.0"/>
+                                         </font>
+                                     </Label>
                                  </children>
                               </AnchorPane>
                           </items>
@@ -151,7 +160,8 @@
                <VBox.margin>
                   <Insets top="-1.0" />
                </VBox.margin></Button>
-            <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="32.0" prefWidth="199.0" styleClass="file" stylesheets="@Button.css" text="Закрыть &gt;">
+             <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#pressClear" prefHeight="32.0"
+                     prefWidth="199.0" styleClass="file" stylesheets="@Button.css" text="Закрыть &gt;">
                <VBox.margin>
                   <Insets top="-1.0" />
                </VBox.margin></Button>
@@ -160,6 +170,12 @@
                <VBox.margin>
                   <Insets top="-1.0" />
                </VBox.margin></Button>
+             <Button alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#clearHistory" prefHeight="32.0"
+                     prefWidth="201.0" styleClass="file" stylesheets="@Button.css" text="Очистить историю">
+                 <VBox.margin>
+                     <Insets top="-1.0"/>
+                 </VBox.margin>
+             </Button>
          </children>
       </VBox>
        <VBox fx:id="settings" layoutX="55.0" layoutY="57.0" prefHeight="200.0" prefWidth="190.0" visible="false"
@@ -176,5 +192,6 @@
          </children>
       </VBox>
       <VBox fx:id="historyVbox" layoutX="189.0" layoutY="88.0" prefHeight="200.0" prefWidth="190.0" visible="false" />
+       <VBox fx:id="clearVBox" layoutX="189.0" layoutY="119.0" prefHeight="200.0" prefWidth="190.0" visible="false"/>
    </children>
 </AnchorPane>
