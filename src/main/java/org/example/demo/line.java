@@ -3,43 +3,34 @@ package org.example.demo;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class line {
-    private SimpleDoubleProperty T;
-    private SimpleDoubleProperty Vx;
-    private SimpleDoubleProperty Vy;
-    private SimpleDoubleProperty Vz;
-    private SimpleDoubleProperty X;
-    private SimpleDoubleProperty Y;
-    private SimpleDoubleProperty Z;
+    private final SimpleDoubleProperty T;
+    private final SimpleDoubleProperty Vx;
+    private final SimpleDoubleProperty Vy;
+    private final SimpleDoubleProperty Vz;
+    private final SimpleDoubleProperty X;
+    private final SimpleDoubleProperty Y;
+    private final SimpleDoubleProperty Z;
 
 
+    //геттеры необходимы для работы PropertyValueFactory
     public SimpleDoubleProperty XProperty() {
         return X;
     }
-
-
     public SimpleDoubleProperty TProperty() {
         return T;
     }
-
     public SimpleDoubleProperty YProperty() {
         return Y;
     }
-
     public SimpleDoubleProperty ZProperty() {
         return Z;
     }
-
-
     public SimpleDoubleProperty VxProperty() {
         return Vx;
     }
-
-
     public SimpleDoubleProperty VyProperty() {
         return Vy;
     }
-
-
     public SimpleDoubleProperty VzProperty() {
         return Vz;
     }

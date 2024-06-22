@@ -197,7 +197,7 @@ public class HelloController{
         catalogButton.setOnAction(_ -> {
             //заполнение пути
             fillFilePath(finalFile);
-            title.setText("Траектории - " + finalFile1.getName());
+            title.setText(STR."Траектории - \{finalFile1.getName()}");
 
             try {
                 //уставновка названия
@@ -243,15 +243,16 @@ public class HelloController{
                 TableColumn<line, Double> Vz = new TableColumn<>("Vz,м/c");
                 Vz.setCellValueFactory(new PropertyValueFactory<>("Vz"));
 
-                if (table.getColumns().addAll(T, X, Y, Z, Vx, Vy, Vz)) {
-
-                    AnchorPane.setTopAnchor(table, 24.0);
-                    AnchorPane.setLeftAnchor(table, 0.0);
-                    AnchorPane.setRightAnchor(table, 0.0);
-                    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-
-                    tablePane.getChildren().add(table);
+                if (!table.getColumns().addAll(T, X, Y, Z, Vx, Vy, Vz)) {
+                    return;
                 }
+
+                AnchorPane.setTopAnchor(table, 24.0);
+                AnchorPane.setLeftAnchor(table, 0.0);
+                AnchorPane.setRightAnchor(table, 0.0);
+                table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
+                tablePane.getChildren().add(table);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
