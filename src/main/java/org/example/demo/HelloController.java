@@ -214,7 +214,7 @@ public class HelloController{
 
                 String str = reader.readLine();
                 while (str != null) {
-                    if (str.matches("[0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}  [0-9]{0,8}\\.[0-9]{0,8}")) {
+                    if (str.matches("[0-9]{0,8}\\.[0-9]{0,8} {2}[0-9]{0,8}\\.[0-9]{0,8} {2}[0-9]{0,8}\\.[0-9]{0,8} {2}[0-9]{0,8}\\.[0-9]{0,8} {2}[0-9]{0,8}\\.[0-9]{0,8} {2}[0-9]{0,8}\\.[0-9]{0,8} {2}[0-9]{0,8}\\.[0-9]{0,8}")) {
                         lines.add(new line(str));
                     }
                     // read next line
@@ -243,15 +243,15 @@ public class HelloController{
                 TableColumn<line, Double> Vz = new TableColumn<>("Vz,м/c");
                 Vz.setCellValueFactory(new PropertyValueFactory<>("Vz"));
 
-                table.getColumns().addAll(T, X, Y, Z, Vx, Vy, Vz);
+                if (table.getColumns().addAll(T, X, Y, Z, Vx, Vy, Vz)) {
 
-                AnchorPane.setTopAnchor(table, 24.0);
-                AnchorPane.setLeftAnchor(table, 0.0);
-                AnchorPane.setRightAnchor(table, 0.0);
-                table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+                    AnchorPane.setTopAnchor(table, 24.0);
+                    AnchorPane.setLeftAnchor(table, 0.0);
+                    AnchorPane.setRightAnchor(table, 0.0);
+                    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
-                tablePane.getChildren().add(table);
-
+                    tablePane.getChildren().add(table);
+                }
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
