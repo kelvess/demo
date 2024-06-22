@@ -136,15 +136,15 @@ public class HelloController{
             Button clearOneFile = createButton(catalogButtons.get(i).getText());
             int finalI = i;
             clearOneFile.setOnAction(_ -> {
-                Catalog.getChildren().remove(catalogButtons.get(finalI));
-                catalogButtons.remove(finalI);
-                fillClear();
                 if (title.getText().substring(13).equals(catalogButtons.get(finalI).getText())) {
                     if (tablePane.getChildren().size() != 1)
                         tablePane.getChildren().remove(1);
                     currentFilePath.setText("Filepath");
                     text.clear();
                 }
+                Catalog.getChildren().remove(catalogButtons.get(finalI));
+                catalogButtons.remove(finalI);
+                fillClear();
             });
             VBox.setMargin(clearOneFile, new Insets(-1, 0, 0, 0));
             clearVBox.getChildren().add(clearOneFile);
@@ -303,9 +303,9 @@ public class HelloController{
             history[0] = file.getAbsolutePath();
             //запись новой истории
             for (int i = 0; i < 5; i++) {
-                historyPref.put(Integer.toString(i), history[i]);
+                if (history[i] != null)
+                    historyPref.put(Integer.toString(i), history[i]);
             }
-
             updateHistoryButtons();
 
     }
@@ -319,7 +319,6 @@ public class HelloController{
     private void readHistory() {
         for (int i = 0; i < 5; i++) {
             history[i] = historyPref.get(Integer.toString(i), null);
-            System.out.println(history[i]);
         }
         updateHistoryButtons();
     }
